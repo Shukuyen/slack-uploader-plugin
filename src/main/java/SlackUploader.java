@@ -32,14 +32,16 @@ public class SlackUploader extends Recorder {
     private final String channel;
     private final String token;
     private final String filePath;
+    private final String title;
     private static final String CHOICE_OF_SHELL = "/bin/bash";
     
     @DataBoundConstructor
-    public SlackUploader(String channel, String token, String filePath) {
+    public SlackUploader(String channel, String token, String filePath, String title) {
         super();
         this.channel = channel;
         this.token = token;
         this.filePath = filePath;
+        this.title = title;
     }
 
     public String getChannel() {
@@ -54,6 +56,9 @@ public class SlackUploader extends Recorder {
         return token;
     }
     
+    public String getTitle() {
+        return title;
+    }
     
     @Override
     public BuildStepMonitor getRequiredMonitorService() {
@@ -89,7 +94,7 @@ public class SlackUploader extends Recorder {
     private String generateScript() {
         String loop = "for file in $(ls " + filePath + ");";
         loop+="do ";
-        String curlRequest = loop + "curl -F file=@$file -F channels=" + channel +" -F token=" + token + " https://slack.com/api/files.upload ;";
+        String curlRequest = loop + "curl -F file=@$file -F channels=" + channel +" -F title=" + title + " -F token=" + token + " https://slack.com/api/files.upload ;";
         String loopDone = curlRequest + "done;";
         return loopDone;
     }
@@ -154,7 +159,8 @@ public class SlackUploader extends Recorder {
             String channel = req.getParameter("channel");
             String token = req.getParameter("token");
             String filePath = req.getParameter("filePath");
-            return new SlackUploader(channel, token, filePath);
+            String title = req.getParameter("title");
+            return new SlackUploader(channel, token, filePath, title);
         }
 
         
