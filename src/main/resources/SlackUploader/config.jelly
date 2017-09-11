@@ -9,5 +9,8 @@
 <f:entry title="${%Enter path to file directory}" field="filePath">
         <f:textbox name="filePath" value="${instance.getFilePath()}"/>
   </f:entry>
+<f:entry title="${%Add title}" field="token">
+        <f:textbox name="title" value="${instance.getTitle()}"/>
+</f:entry>
 
 </j:jelly>
