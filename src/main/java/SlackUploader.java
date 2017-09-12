@@ -5,6 +5,7 @@
  */
 
 import hudson.Extension;
+import hudson.EnvVars;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
@@ -73,8 +74,7 @@ public class SlackUploader extends Recorder {
         Process process = null;
 
         try {
-            String script = generateScript();
-            
+            String script = generateScript(build.getEnvironment(listener));
             process = runScript(runtime, script);
             
             log.logOutput(listener, process);
@@ -91,10 +91,10 @@ public class SlackUploader extends Recorder {
 
     
 
-    private String generateScript() {
+    private String generateScript(final EnvVars env) {
         String loop = "for file in $(ls " + filePath + ");";
         loop+="do ";
-        String curlRequest = loop + "curl -F file=@$file -F channels=" + channel +" -F title=" + title + " -F token=" + token + " https://slack.com/api/files.upload ;";
+        String curlRequest = loop + "curl -F file=@$file -F channels=" + env.expand(channel) +" -F title=\"" + env.expand(title) + "\" -F token=" + token + " https://slack.com/api/files.upload ;";
         String loopDone = curlRequest + "done;";
         return loopDone;
     }
