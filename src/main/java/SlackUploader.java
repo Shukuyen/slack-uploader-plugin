@@ -11,6 +11,7 @@ import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
 import hudson.model.FreeStyleProject;
+import hudson.model.Result;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Publisher;
@@ -72,6 +73,11 @@ public class SlackUploader extends Recorder {
         LogOutput log = new LogOutput();
         Runtime runtime = Runtime.getRuntime();
         Process process = null;
+        
+        final Result buildResult = build.getResult();
+        if (buildResult != null && buildResult.isWorseThan(Result.SUCCESS)) {
+	        return true;
+        }
 
         try {
             String script = generateScript(build.getEnvironment(listener));
